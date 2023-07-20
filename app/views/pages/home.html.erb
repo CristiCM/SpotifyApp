@@ -5,7 +5,7 @@
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-9">
-      <%= button_to "Connect Spotify", '#', method: :post, class: "btn btn-primary" %>
+      <%= button_to "Sign in with Spotify", user_spotify_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "btn btn-primary" %>
     </div>
   </div>
 </div>

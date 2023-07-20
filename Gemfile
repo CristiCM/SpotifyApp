@@ -74,6 +74,8 @@ end
 gem "devise", "~> 4.9"
 gem "omniauth", "~> 2.1"
 
-gem "omniauth-shopify-oauth2", "~> 2.4"
+gem 'omniauth-spotify'
 
 gem "omniauth-rails_csrf_protection", "~> 1.0"
+
+gem 'dotenv-rails', groups: [:development, :test]
