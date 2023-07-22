@@ -3,6 +3,7 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def spotify
       # You need to implement the method below in your model (e.g. app/models/user.rb)
+      # request.env['omniauth.auth'] returns a hash of all the information sent by the provider.
       @user = User.from_omniauth(request.env['omniauth.auth'])
 
       if @user.persisted?

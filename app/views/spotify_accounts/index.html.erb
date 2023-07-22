@@ -1,0 +1,23 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-9">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1>Spotify Accounts</h1>
+        <%= button_to "Connect a Spotify account", user_spotify_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "btn btn-primary" %>
+      </div>
+
+      <% @spotify_accounts.each do |spotify_account| %>
+        <div class="d-flex align-items-center mb-4">
+          <div class="me-4">
+            <%= image_tag spotify_account.image, class: "rounded-circle" %>
+            <span class="ms-3">
+            <%= link_to "@#{spotify_account.username}", "https://open.spotify.com/user/#{spotify_account.username}", target: :_blank %>
+            </span>
+          </div>
+          <%= button_to "Disconnect", spotify_account, method: :delete, class: "btn btn-primary", data: { confirm: "Are you sure?"} %>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>
