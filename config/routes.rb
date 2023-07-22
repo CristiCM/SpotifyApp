@@ -8,9 +8,16 @@ Rails.application.routes.draw do
     omniauth_callbacks: 'users/omniauth_callbacks'
   }
 
-  resources :spotify_accounts
+  resources :spotify_accounts do
+    post 'previous', on: :member
+    put 'play', on: :member
+    put 'pause', on: :member
+    post 'next', on: :member
+    get 'current_playback', on: :member
+  end
+  
+
   # resources: spotify_accounts is == to
   # get "spotify_accounts/:id"
   # delete "spotify_accounts/:id"
-
 end

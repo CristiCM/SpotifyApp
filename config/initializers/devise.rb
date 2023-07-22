@@ -312,5 +312,5 @@ Devise.setup do |config|
   # config.sign_in_after_change_password = true
 
   config.scoped_views = true
-  config.omniauth :spotify, ENV['SPOTIFY_CLIENT_ID'], ENV['SPOTIFY_CLIENT_SECRET'], scope: 'user-read-email'
+  config.omniauth :spotify, ENV['SPOTIFY_CLIENT_ID'], ENV['SPOTIFY_CLIENT_SECRET'], scope: 'user-read-email playlist-modify-public user-modify-playback-state user-read-playback-state'
 end

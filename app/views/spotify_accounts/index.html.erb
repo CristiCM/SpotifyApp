@@ -3,7 +3,7 @@
     <div class="col-md-9">
       <div class="d-flex align-items-center justify-content-between mb-3">
         <h1>Spotify Accounts</h1>
-        <%= button_to "Connect a Spotify account", user_spotify_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "btn btn-primary" %>
+        <%= button_to "Connect a Spotify account", user_spotify_omniauth_authorize_path, method: :post, data: { turbo: false }, class: "btn btn-secondary" %>
       </div>
 
       <% @spotify_accounts.each do |spotify_account| %>
@@ -14,10 +14,133 @@
             <%= link_to "@#{spotify_account.username}", "https://open.spotify.com/user/#{spotify_account.username}", target: :_blank %>
             </span>
           </div>
-          <%= button_to "Disconnect", spotify_account, method: :delete, class: "btn btn-primary", data: { confirm: "Are you sure?"} %>
+          <%= button_to "Disconnect", spotify_account, method: :delete, class: "btn btn-secondary", data: { confirm: "Are you sure?"} %>
         </div>
+      <% end %>
+
+      <div class="d-flex align-items-center justify-content-center mb-2">
+        <h1 class="fw-bold">Player</h1>
+      </div>
+
+      <% if !current_user.nil? %>
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-9 text-center">
+              <div id="player" class="fw-bold">
+                <div id="now-playing">Now playing: <span id="track-name">N/A</span></div>
+                <div>Artist: <span id="current-artist-name">N/A</span></div>
+                <div>Album: <span id="current-album-name">N/A</span></div>
+                <img id="album-art" src="" class="img-thumbnail " alt="Album art">
+              </div>
+
+              <div class="btn-group" role="group" aria-label="Basic example">
+                <button id="previous-button" class="btn btn-secondary">Prev</button>
+                <button id="play-button" class="btn btn-secondary">Play</button>
+                <button id="pause-button" class="btn btn-secondary">Pause</button>
+                <button id="next-button" class="btn btn-secondary">Next</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <div class="fw-bold text-center">Log in to access the player.</div>
       <% end %>
 
     </div>
   </div>
 </div>
+
+<script>
+  function updateCurrentPlayback() {
+    var spotifyAccountId = document.getElementById('previous-button').getAttribute('data-spotify-account-id');
+    fetch('/spotify_accounts/' + spotifyAccountId + '/current_playback', { 
+      method: 'GET',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      updatePlayer(data.data);
+    });
+  }
+
+  function updatePlayer(data) {
+    document.getElementById('track-name').textContent = data.item.name;
+    document.getElementById('current-artist-name').textContent = data.item.artists[0].name;
+    document.getElementById('current-album-name').textContent = data.item.album.name;
+    document.getElementById('album-art').src = data.item.album.images[1].url;
+  }
+
+  document.getElementById('previous-button').addEventListener('click', function() {
+    var spotifyAccountId = this.getAttribute('data-spotify-account-id');
+    fetch('/spotify_accounts/' + spotifyAccountId + '/previous', { 
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      updateCurrentPlayback();
+    });
+  });
+
+  document.getElementById('play-button').addEventListener('click', function() {
+    var spotifyAccountId = this.getAttribute('data-spotify-account-id');
+    fetch('/spotify_accounts/' + spotifyAccountId + '/play', { 
+      method: 'PUT',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      updateCurrentPlayback();
+    });
+  });
+
+  document.getElementById('pause-button').addEventListener('click', function() {
+    var spotifyAccountId = this.getAttribute('data-spotify-account-id');
+    fetch('/spotify_accounts/' + spotifyAccountId + '/pause', { 
+      method: 'PUT',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      updateCurrentPlayback();
+    });
+  });
+
+  document.getElementById('next-button').addEventListener('click', function() {
+    var spotifyAccountId = this.getAttribute('data-spotify-account-id');
+    fetch('/spotify_accounts/' + spotifyAccountId + '/next', { 
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      updateCurrentPlayback();
+    });
+  });
+
+</script>
