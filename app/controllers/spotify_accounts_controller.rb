@@ -1,6 +1,8 @@
 class SpotifyAccountsController < ApplicationController
     before_action :require_user_logged_in!
     before_action :set_spotify_account, only: [:destroy]
+    before_action :update_refresh_token_if_expired, only: [:previous, :play, :pause, :next, :current_playback]
+
     def index
         @spotify_accounts = current_user.spotify_accounts
     end
@@ -11,47 +13,38 @@ class SpotifyAccountsController < ApplicationController
     end
 
     def previous
-        spotify_account = current_user.spotify_accounts.last
-      
-        if spotify_account.user == current_user
-          uri = URI.parse("https://api.spotify.com/v1/me/player/previous")
-          request = Net::HTTP::Post.new(uri)
-          request["Authorization"] = "Bearer #{spotify_account.accesstoken}"
-      
-          req_options = {
-            use_ssl: uri.scheme == "https",
-          }
-      
-          response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
-            http.request(request)
-          end
-
-          puts "Spotify API response: #{response.body}" # Log the response
-          puts "Spotify API status code: #{response.code}" # Log the status code
-      
-          render json: { status: response.code }
-        else
-          render json: { error: "Not authorized" }, status: :unauthorized
-        end
+      spotify_account = current_user.spotify_accounts.last
+    
+      if spotify_account.user == current_user
+        uri = "https://api.spotify.com/v1/me/player/previous"
+    
+        response = RestClient::Request.execute(
+          method: :post, 
+          url: uri,
+          headers: { Authorization: "Bearer #{spotify_account.accesstoken}" }
+        )
+    
+        puts "Spotify API status code: #{response.code}" # Log the status code
+    
+        render json: { status: response.code }
+      else
+        render json: { error: "Not authorized" }, status: :unauthorized
+      end
     end
+    
 
     def play
         spotify_account = current_user.spotify_accounts.last
       
         if spotify_account.user == current_user
-          uri = URI.parse("https://api.spotify.com/v1/me/player/play")
-          request = Net::HTTP::Put.new(uri)
-          request["Authorization"] = "Bearer #{spotify_account.accesstoken}"
-      
-          req_options = {
-            use_ssl: uri.scheme == "https",
-          }
-      
-          response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
-            http.request(request)
-          end
+          uri = "https://api.spotify.com/v1/me/player/play"
+          
+          response = RestClient::Request.execute(
+            method: :put,
+            url: uri,
+            headers: { Authorization: "Bearer #{spotify_account.accesstoken}"}
+          )
 
-          puts "Spotify API response: #{response.body}" # Log the response
           puts "Spotify API status code: #{response.code}" # Log the status code
       
           render json: { status: response.code }
@@ -64,19 +57,14 @@ class SpotifyAccountsController < ApplicationController
         spotify_account = current_user.spotify_accounts.last
       
         if spotify_account.user == current_user
-          uri = URI.parse("https://api.spotify.com/v1/me/player/pause")
-          request = Net::HTTP::Put.new(uri)
-          request["Authorization"] = "Bearer #{spotify_account.accesstoken}"
-      
-          req_options = {
-            use_ssl: uri.scheme == "https",
-          }
-      
-          response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
-            http.request(request)
-          end
+          uri = "https://api.spotify.com/v1/me/player/pause"
+          
+          response = RestClient::Request.execute(
+            method: :put,
+            url: uri,
+            headers: { Authorization: "Bearer #{spotify_account.accesstoken}"}
+          )
 
-          puts "Spotify API response: #{response.body}" # Log the response
           puts "Spotify API status code: #{response.code}" # Log the status code
       
           render json: { status: response.code }
@@ -89,19 +77,14 @@ class SpotifyAccountsController < ApplicationController
         spotify_account = current_user.spotify_accounts.last
       
         if spotify_account.user == current_user
-          uri = URI.parse("https://api.spotify.com/v1/me/player/next")
-          request = Net::HTTP::Post.new(uri)
-          request["Authorization"] = "Bearer #{spotify_account.accesstoken}"
-      
-          req_options = {
-            use_ssl: uri.scheme == "https",
-          }
-      
-          response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
-            http.request(request)
-          end
+          uri = "https://api.spotify.com/v1/me/player/next"
 
-          puts "Spotify API response: #{response.body}" # Log the response
+          response = RestClient::Request.execute(
+            method: :post,
+            url: uri,
+            headers: { Authorization: "Bearer #{spotify_account.accesstoken}"}
+          )
+          
           puts "Spotify API status code: #{response.code}" # Log the status code
       
           render json: { status: response.code }
@@ -114,19 +97,14 @@ class SpotifyAccountsController < ApplicationController
         spotify_account = current_user.spotify_accounts.last
       
         if spotify_account.user == current_user
-          uri = URI.parse("https://api.spotify.com/v1/me/player")
-          request = Net::HTTP::Get.new(uri)
-          request["Authorization"] = "Bearer #{spotify_account.accesstoken}"
+          uri = "https://api.spotify.com/v1/me/player"
+          
+          response = RestClient::Request.execute(
+            method: :get,
+            url: uri,
+            headers: { Authorization: "Bearer #{spotify_account.accesstoken}"}
+          )
       
-          req_options = {
-            use_ssl: uri.scheme == "https",
-          }
-      
-          response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
-            http.request(request)
-          end
-      
-          puts "Spotify API response: #{response.body}" # Log the response
           puts "Spotify API status code: #{response.code}" # Log the status code
       
           render json: { status: response.code, data: JSON.parse(response.body) }
@@ -139,5 +117,9 @@ class SpotifyAccountsController < ApplicationController
     
     def set_spotify_account
         @spotify_account = current_user.spotify_accounts.find(params[:id])
+    end
+
+    def update_refresh_token_if_expired
+      current_user.refresh_tokens_if_expired
     end
 end

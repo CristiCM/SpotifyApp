@@ -79,3 +79,5 @@ gem 'omniauth-spotify'
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 
 gem 'dotenv-rails', groups: [:development, :test]
+
+gem "rest-client", "~> 2.1"

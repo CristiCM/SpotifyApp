@@ -39,6 +39,7 @@
                     <button id="play-button" class="btn btn-secondary">Play</button>
                     <button id="pause-button" class="btn btn-secondary">Pause</button>
                     <button id="next-button" class="btn btn-secondary">Next</button>
+                    <button id="update_player" class="btn btn-secondary">Update</button>
                   </div>
                 </div>
               </div>
@@ -58,7 +59,7 @@
 
 
   function updateCurrentPlayback() {
-    var spotifyAccountId = document.getElementById('previous-button').getAttribute('data-spotify-account-id');
+    var spotifyAccountId = document.getElementById('update_player').getAttribute('data-spotify-account-id');
     fetch('/spotify_accounts/' + spotifyAccountId + '/current_playback', { 
       method: 'GET',
       headers: {
@@ -80,6 +81,8 @@
     document.getElementById('current-album-name').textContent = data.item.album.name;
     document.getElementById('album-art').src = data.item.album.images[1].url;
   }
+  
+  document.getElementById('update_player').addEventListener('click', updateCurrentPlayback);
 
   document.getElementById('previous-button').addEventListener('click', function() {
     var spotifyAccountId = this.getAttribute('data-spotify-account-id');
