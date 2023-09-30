@@ -1,24 +1,14 @@
-# README
+# Spotify Controller App
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A very simple web application to control Spotify playback. Hosted and ready to use at [Spotify Controller App](https://spotify-app-ctq0.onrender.com).
 
-Things you may want to cover:
+## Features
+- **User Authentication**: Securely register and log in using Devise.
+- **Spotify Connection**: Easily connect to your Spotify account using OmniAuth.
+- **Playback Control**: Intuitive controls to play, pause, and skip tracks directly from the web interface.
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Usage
+1. Visit [Spotify Controller App](https://spotify-app-ctq0.onrender.com).
+2. Register a new account or log in.
+3. Connect your Spotify account and grant the necessary permissions.
+4. Enjoy controlling your Spotify playback right from the app!
